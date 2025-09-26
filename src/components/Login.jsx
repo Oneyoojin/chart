@@ -148,7 +148,6 @@ const Login = ({ onLogin }) => {
 
           <form className="login-form" onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="email" className="form-label">이메일 또는 전화번호</label>
               <div className="input-wrapper">
                 {!formData.email && <i className="fas fa-user input-icon"></i>}
                 <input
@@ -165,7 +164,6 @@ const Login = ({ onLogin }) => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="password" className="form-label">비밀번호</label>
               <div className="input-wrapper">
                 {!formData.password && <i className="fas fa-lock input-icon"></i>}
                 <input
