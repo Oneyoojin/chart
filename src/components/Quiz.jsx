@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import './quiz.css';
+import React, { useState } from 'react';
+import '../styles/quiz.css';
 
 const Quiz = ({ onComplete }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);

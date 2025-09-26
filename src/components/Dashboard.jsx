@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import './dashboard.css';
+import '../styles/dashboard.css';
 
 const Dashboard = () => {
   // 상태

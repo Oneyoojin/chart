@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './login.css';
+import '../styles/login.css';
 
 const Login = ({ onLogin }) => {
   const [formData, setFormData] = useState({
@@ -194,7 +194,7 @@ const Login = ({ onLogin }) => {
                 <span className="checkmark"></span>
                 <span className="checkbox-label">로그인 상태 유지</span>
               </label>
-              <a href="#" className="forgot-link">비밀번호를 잊으셨나요?</a>
+              <button type="button" className="forgot-link">비밀번호를 잊으셨나요?</button>
             </div>
 
             <button
@@ -225,7 +225,7 @@ const Login = ({ onLogin }) => {
 
         {/* 푸터 */}
         <div className="login-footer">
-          <p>계정이 없으신가요? <a href="#">회원가입</a></p>
+          <p>계정이 없으신가요? <button type="button" className="signup-link">회원가입</button></p>
         </div>
       </div>
 
