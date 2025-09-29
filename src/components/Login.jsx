@@ -76,7 +76,7 @@ const Login = ({ onLogin }) => {
     try {
       // 로그인 시뮬레이션
       await simulateLogin();
-      showNotification('success', '로그인 성공! 환영합니다.', '🎉');
+      showNotification('success', '로그인 성공! 환영합니다.');
       
       // 1.5초 후 퀴즈로 이동
       setTimeout(() => {
@@ -84,7 +84,7 @@ const Login = ({ onLogin }) => {
       }, 1500);
       
     } catch (error) {
-      showNotification('error', error.message || '로그인에 실패했습니다.', '❌');
+      showNotification('error', error.message || '로그인에 실패했습니다.');
     } finally {
       setIsLoading(false);
     }
