@@ -244,6 +244,7 @@ body {
 .start-footer {
   text-align: center;
   margin-top: 20px;
+  margin-bottom: 40px;
 }
 
 .start-footer p {
@@ -293,7 +294,7 @@ body {
 
 @media (max-width: 480px) {
   .start-page {
-    padding: 10px;
+    padding: 10px 10px 30px 10px;
   }
   
   .start-container {

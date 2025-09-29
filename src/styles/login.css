@@ -23,7 +23,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 20px 20px 60px 20px;
 }
 
 /* 배경 */
@@ -402,7 +402,7 @@ body {
 /* 푸터 */
 .login-footer {
   text-align: center;
-  margin-top: -20px;
+  margin-top: 20px;
 }
 
 .login-footer p {
@@ -495,7 +495,7 @@ body {
 /* 반응형 디자인 */
 @media (max-width: 480px) {
   .login-page {
-    padding: 16px;
+    padding: 16px 16px 40px 16px;
   }
   
   .login-container {
