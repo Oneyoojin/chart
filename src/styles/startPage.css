@@ -81,7 +81,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 30px;
-  margin-top: -50px;
+  margin-top: 20px;
 }
 
 /* 로고 섹션 */
@@ -269,7 +269,7 @@ body {
   .start-container {
     max-width: 100%;
     padding: 0 20px;
-    margin-top: -20px;
+    margin-top: 40px;
   }
   
   .start-card {
@@ -296,6 +296,7 @@ body {
   
   .start-container {
     gap: 20px;
+    margin-top: 30px;
   }
   
   .start-card {
