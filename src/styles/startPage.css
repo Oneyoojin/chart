@@ -191,6 +191,7 @@ body {
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 5px;
+  text-align: left;
 }
 
 .info-text p {
@@ -198,6 +199,7 @@ body {
   color: var(--text-secondary);
   margin: 0;
   line-height: 1.5;
+  text-align: left;
 }
 
 /* 시작 버튼 */
