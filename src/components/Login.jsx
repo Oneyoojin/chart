@@ -100,7 +100,7 @@ const Login = ({ onLogin }) => {
         } else {
           reject(new Error('이메일 또는 비밀번호가 올바르지 않습니다.'));
         }
-      }, 2000);
+      }, 1600);
     });
   };
 
