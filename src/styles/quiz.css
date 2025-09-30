@@ -315,6 +315,39 @@ body {
   font-size: 20px;
 }
 
+/* 해석 박스 */
+.explanation-box {
+  margin-top: 20px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  animation: slideUp 0.3s ease;
+}
+
+.explanation-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: #475569;
+  font-size: 16px;
+}
+
+.explanation-header i {
+  color: #f59e0b;
+  font-size: 18px;
+}
+
+.explanation-text {
+  color: #374151;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+  font-weight: 500;
+}
+
 /* 네비게이션 */
 .quiz-navigation {
   display: flex;
