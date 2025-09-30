@@ -217,7 +217,8 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
   z-index: 2;
 }
 
-.input-wrapper input {
+.input-wrapper input,
+.input-wrapper select {
   width: 100%;
   padding: 16px;
   background: white;
@@ -230,11 +231,13 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
   outline: none;
 }
 
-.input-wrapper:has(.input-icon) input {
+.input-wrapper:has(.input-icon) input,
+.input-wrapper:has(.input-icon) select {
   padding-left: 48px;
 }
 
-.input-wrapper input:focus {
+.input-wrapper input:focus,
+.input-wrapper select:focus {
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
