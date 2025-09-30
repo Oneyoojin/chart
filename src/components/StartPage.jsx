@@ -1,7 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import '../styles/startPage.css';
 
 const StartPage = ({ onStart }) => {
+  // StartPage 전용 body 스타일 적용
+  useEffect(() => {
+    document.body.classList.add('startpage-body');
+    return () => {
+      document.body.classList.remove('startpage-body');
+    };
+  }, []);
   return (
     <div className="start-page">
       {/* 배경 */}

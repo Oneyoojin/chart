@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/quiz.css';
 
 const Quiz = ({ onComplete }) => {
@@ -7,6 +7,14 @@ const Quiz = ({ onComplete }) => {
   const [showFeedback, setShowFeedback] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const [isAnswered, setIsAnswered] = useState(false);
+
+  // Quiz 페이지 전용 body 스타일 적용
+  useEffect(() => {
+    document.body.classList.add('quiz-body');
+    return () => {
+      document.body.classList.remove('quiz-body');
+    };
+  }, []);
 
   const questions = [
     {
@@ -170,7 +178,7 @@ const Quiz = ({ onComplete }) => {
             <p className="progress-text">문제 {currentQuestion + 1} / {questions.length}</p>
           </div>
           
-          {!showFeedback || selectedAnswers[currentQuestion] === questions[currentQuestion].correct ? (
+          {!showFeedback ? (
             <div className="question-layout">
               <div className="question-image">
                 <img 

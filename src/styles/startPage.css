@@ -19,14 +19,7 @@
   box-sizing: border-box;
 }
 
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: var(--background);
-  color: var(--text-primary);
-  line-height: 1.6;
-  overflow-x: hidden;
-  min-height: 100vh;
-}
+/* StartPage 전용 body 스타일은 index.css의 .startpage-body로 이동됨 */
 
 /* 시작 페이지 컨테이너 */
 .start-page {

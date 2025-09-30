@@ -76,7 +76,7 @@ const Login = ({ onLogin }) => {
     try {
       // 로그인 시뮬레이션
       await simulateLogin();
-      showNotification('success', '로그인 성공! 환영합니다.');
+      showNotification('success','🎉', '로그인 성공! 환영합니다.');
       
       // 1.5초 후 퀴즈로 이동
       setTimeout(() => {
@@ -200,8 +200,7 @@ const Login = ({ onLogin }) => {
               className="login-btn"
               disabled={isLoading}
             >
-              <span>로그인</span>
-              <i className="fas fa-arrow-right"></i>
+              로그인
             </button>
           </form>
 
@@ -232,7 +231,22 @@ const Login = ({ onLogin }) => {
         <div className={`notification ${notification.type}`}>
           <div className="notification-content">
             <i className="notification-icon">{notification.icon}</i>
-            <span className="notification-message">{notification.message}</span>
+            <span 
+              className="notification-message"
+              style={{
+                fontSize: '16px',
+                color: '#374151',
+                fontWeight: '600',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                lineHeight: '1.4',
+                display: 'inline-block',
+                textRendering: 'optimizeLegibility',
+                WebkitFontSmoothing: 'antialiased',
+                MozOsxFontSmoothing: 'grayscale'
+              }}
+            >
+              {notification.message}
+            </span>
           </div>
         </div>
       )}
