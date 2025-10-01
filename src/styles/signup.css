@@ -243,6 +243,12 @@ span.notification-message {
   margin-top: 8px;
   font-weight: 500;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  white-space: nowrap;
+}
+
+.error-container {
+  margin-top: 4px;
+  margin-bottom: 16px;
 }
 
 /* 폼 옵션 */
@@ -297,6 +303,7 @@ span.notification-message {
   font-size: 14px;
   color: #64748b;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 /* 회원가입 버튼 */

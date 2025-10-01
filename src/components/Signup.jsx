@@ -279,8 +279,12 @@ const Signup = ({ onSignup, onBackToLogin }) => {
                 <span className="checkmark"></span>
                 <span className="checkbox-label">이용약관 및 개인정보처리방침에 동의합니다.</span>
               </label>
-              {errors.agreeTerms && <span className="error-text">{errors.agreeTerms}</span>}
             </div>
+            {errors.agreeTerms && (
+              <div className="error-container">
+                <span className="error-text">{errors.agreeTerms}</span>
+              </div>
+            )}
 
             <button
               type="submit"
