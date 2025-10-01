@@ -76,7 +76,7 @@ const Login = ({ onLogin, onSignupClick }) => {
     try {
       // 로그인 시뮬레이션
       await simulateLogin();
-      showNotification('success','🎉', '로그인 성공! 환영합니다.');
+      showNotification('success', '로그인 성공! 환영합니다.', '🎉');
       
       // 1.5초 후 퀴즈로 이동
       setTimeout(() => {
@@ -231,20 +231,7 @@ const Login = ({ onLogin, onSignupClick }) => {
         <div className={`notification ${notification.type}`}>
           <div className="notification-content">
             <i className="notification-icon">{notification.icon}</i>
-            <span 
-              className="notification-message"
-              style={{
-                fontSize: '16px',
-                color: '#374151',
-                fontWeight: '600',
-                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                lineHeight: '1.4',
-                display: 'inline-block',
-                textRendering: 'optimizeLegibility',
-                WebkitFontSmoothing: 'antialiased',
-                MozOsxFontSmoothing: 'grayscale'
-              }}
-            >
+            <span className="notification-message">
               {notification.message}
             </span>
           </div>

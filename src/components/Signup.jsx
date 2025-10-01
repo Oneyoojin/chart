@@ -118,7 +118,7 @@ const Signup = ({ onSignup, onBackToLogin }) => {
     try {
       // 회원가입 시뮬레이션
       await simulateSignup();
-      showNotification('success', '🎉', '회원가입 성공! 환영합니다.');
+      showNotification('success', '회원가입 성공! 환영합니다.', '🎉');
       
       // 1.5초 후 로그인 페이지로 이동
       setTimeout(() => {

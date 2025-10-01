@@ -242,6 +242,7 @@ span.notification-message {
   font-size: 14px;
   margin-top: 8px;
   font-weight: 500;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* 폼 옵션 */

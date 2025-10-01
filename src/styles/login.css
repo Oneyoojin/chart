@@ -19,9 +19,9 @@ body .login-page div.notification div.notification-content span.notification-mes
 .login-page div.notification div.notification-content span.notification-message,
 div.notification div.notification-content span.notification-message,
 span.notification-message {
-  font-size: 16px !important;
+  font-size: 14px !important;
   color: #374151 !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   line-height: 1.4 !important;
   display: inline-block !important;
@@ -36,8 +36,8 @@ span.notification-message {
 .notification .notification-content .notification-message,
 .login-page .notification .notification-content .notification-message {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-  font-size: 16px !important;
-  font-weight: 600 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
   color: #374151 !important;
 }
 
@@ -49,9 +49,9 @@ div.notification .notification-content .notification-message,
 div.notification.success .notification-content .notification-message,
 .login-page div.notification div.notification-content span.notification-message,
 body.loginpage-body .login-page div.notification div.notification-content span.notification-message {
-  font-size: 16px !important;
+  font-size: 14px !important;
   color: #374151 !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   line-height: 1.4 !important;
   display: inline-block !important;
@@ -276,6 +276,7 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
   font-size: 14px;
   margin-top: 8px;
   font-weight: 500;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* 폼 옵션 */
@@ -520,9 +521,9 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
 
 /* 알림 메시지 기본 스타일 (상위에서 오버라이드됨) */
 .notification-message {
-  font-size: 16px;
+  font-size: 14px;
   color: #374151;
-  font-weight: 600;
+  font-weight: 500;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
 }
 
@@ -531,9 +532,9 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
 * .notification .notification-message,
 * .notification-content .notification-message,
 * span.notification-message {
-  font-size: 16px !important;
+  font-size: 14px !important;
   color: #374151 !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   line-height: 1.4 !important;
 }
