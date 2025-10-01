@@ -3,11 +3,10 @@ import '../styles/signup.css';
 
 const Signup = ({ onSignup, onBackToLogin }) => {
   const [formData, setFormData] = useState({
-    name: '',
+    nickname: '',
     email: '',
     password: '',
     confirmPassword: '',
-    phone: '',
     agreeTerms: false
   });
   const [errors, setErrors] = useState({});
@@ -43,11 +42,14 @@ const Signup = ({ onSignup, onBackToLogin }) => {
     let error = '';
     
     switch (fieldName) {
-      case 'name':
+      case 'nickname':
+        const nicknameRegex = /^[a-zA-Z0-9가-힣]+$/;
         if (!value) {
-          error = '이름을 입력해주세요.';
-        } else if (value.length < 2) {
-          error = '이름은 최소 2자 이상이어야 합니다.';
+          error = '닉네임을 입력해주세요.';
+        } else if (value.length < 3) {
+          error = '닉네임은 최소 3자 이상이어야 합니다.';
+        } else if (!nicknameRegex.test(value)) {
+          error = '닉네임은 한글, 영문, 숫자만 사용 가능합니다.';
         }
         break;
       case 'email':
@@ -56,12 +58,6 @@ const Signup = ({ onSignup, onBackToLogin }) => {
           error = '이메일을 입력해주세요.';
         } else if (!emailRegex.test(value)) {
           error = '올바른 이메일 형식이 아닙니다.';
-        }
-        break;
-      case 'phone':
-        const phoneRegex = /^01[0-9]-?[0-9]{4}-?[0-9]{4}$/;
-        if (value && !phoneRegex.test(value)) {
-          error = '올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)';
         }
         break;
       case 'password':
@@ -102,13 +98,13 @@ const Signup = ({ onSignup, onBackToLogin }) => {
     e.preventDefault();
     
     // 모든 필드 유효성 검사
-    const isNameValid = validateField('name', formData.name);
+    const isNicknameValid = validateField('nickname', formData.nickname);
     const isEmailValid = validateField('email', formData.email);
     const isPasswordValid = validateField('password', formData.password);
     const isConfirmPasswordValid = validateField('confirmPassword', formData.confirmPassword);
     const isAgreeTermsValid = validateField('agreeTerms', formData.agreeTerms);
     
-    if (!isNameValid || !isEmailValid || !isPasswordValid || !isConfirmPasswordValid || !isAgreeTermsValid) {
+    if (!isNicknameValid || !isEmailValid || !isPasswordValid || !isConfirmPasswordValid || !isAgreeTermsValid) {
       showNotification('error', '입력 정보를 확인해주세요.', '❌');
       return;
     }
@@ -195,18 +191,18 @@ const Signup = ({ onSignup, onBackToLogin }) => {
           <form className="signup-form" onSubmit={handleSubmit}>
             <div className="form-group">
               <div className="input-wrapper">
-                {!formData.name && <i className="fas fa-user input-icon"></i>}
+                {!formData.nickname && <i className="fas fa-user input-icon"></i>}
                 <input
                   type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
+                  id="nickname"
+                  name="nickname"
+                  value={formData.nickname}
                   onChange={handleInputChange}
-                  placeholder="이름을 입력하세요"
+                  placeholder="닉네임을 입력하세요"
                   required
                 />
               </div>
-              {errors.name && <span className="error-text">{errors.name}</span>}
+              {errors.nickname && <span className="error-text">{errors.nickname}</span>}
             </div>
 
             <div className="form-group">
@@ -223,21 +219,6 @@ const Signup = ({ onSignup, onBackToLogin }) => {
                 />
               </div>
               {errors.email && <span className="error-text">{errors.email}</span>}
-            </div>
-
-            <div className="form-group">
-              <div className="input-wrapper">
-                {!formData.phone && <i className="fas fa-phone input-icon"></i>}
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  placeholder="전화번호 (선택사항)"
-                />
-              </div>
-              {errors.phone && <span className="error-text">{errors.phone}</span>}
             </div>
 
             <div className="form-group">
