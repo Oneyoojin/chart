@@ -45,6 +45,16 @@ body.loginpage-body {
   min-height: 100vh !important;
 }
 
+/* SignupPage 전용 body 스타일 */
+body.signuppage-body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  background: #f8fafc !important;
+  color: #1e293b !important;
+  line-height: 1.6 !important;
+  overflow-x: hidden !important;
+  min-height: 100vh !important;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;

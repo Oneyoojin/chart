@@ -25,11 +25,11 @@
 }
 
 .quiz-header h1 {
-  font-size: 48px;
+  font-size: 28px;
   font-weight: 700;
-  margin-bottom: 16px;
-  color: #1d1d1f;
-  letter-spacing: -0.003em;
+  margin-bottom: 8px;
+  color: #1e293b;
+  letter-spacing: -0.02em;
 }
 
 .quiz-header p {

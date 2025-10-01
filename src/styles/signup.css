@@ -1,4 +1,4 @@
-/* 새로운 로그인 페이지 디자인 */
+/* 회원가입 페이지 디자인 - 로그인 페이지와 통일된 디자인 */
 
 /* 기본 설정 */
 * {
@@ -7,16 +7,14 @@
   box-sizing: border-box;
 }
 
-
-
-/* 로그인 성공 알림 폰트 강제 적용 - 최상위 우선순위 */
+/* 회원가입 성공 알림 폰트 강제 적용 - 최상위 우선순위 */
 /* 최고 우선순위 - 모든 가능한 선택자 */
-html body.loginpage-body .login-page div.notification div.notification-content span.notification-message,
-html body .login-page div.notification div.notification-content span.notification-message,
-html .login-page div.notification div.notification-content span.notification-message,
-body.loginpage-body .login-page div.notification div.notification-content span.notification-message,
-body .login-page div.notification div.notification-content span.notification-message,
-.login-page div.notification div.notification-content span.notification-message,
+html body.signuppage-body .signup-page div.notification div.notification-content span.notification-message,
+html body .signup-page div.notification div.notification-content span.notification-message,
+html .signup-page div.notification div.notification-content span.notification-message,
+body.signuppage-body .signup-page div.notification div.notification-content span.notification-message,
+body .signup-page div.notification div.notification-content span.notification-message,
+.signup-page div.notification div.notification-content span.notification-message,
 div.notification div.notification-content span.notification-message,
 span.notification-message {
   font-size: 16px !important;
@@ -30,38 +28,8 @@ span.notification-message {
   -moz-osx-font-smoothing: grayscale !important;
 }
 
-/* 추가 강제 적용 - 부모 요소 폰트 무시 */
-.notification-message,
-.notification-content .notification-message,
-.notification .notification-content .notification-message,
-.login-page .notification .notification-content .notification-message {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-  font-size: 16px !important;
-  font-weight: 600 !important;
-  color: #374151 !important;
-}
-
-/* 기존 규칙들 */
-.login-page .notification .notification-message,
-.login-page .notification.success .notification-message,
-body.loginpage-body .login-page .notification .notification-message,
-div.notification .notification-content .notification-message,
-div.notification.success .notification-content .notification-message,
-.login-page div.notification div.notification-content span.notification-message,
-body.loginpage-body .login-page div.notification div.notification-content span.notification-message {
-  font-size: 16px !important;
-  color: #374151 !important;
-  font-weight: 600 !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-  line-height: 1.4 !important;
-  display: inline-block !important;
-  text-rendering: optimizeLegibility !important;
-  -webkit-font-smoothing: antialiased !important;
-  -moz-osx-font-smoothing: grayscale !important;
-}
-
-/* 로그인 페이지 컨테이너 */
-.login-page {
+/* 회원가입 페이지 컨테이너 */
+.signup-page {
   min-height: 100vh;
   position: relative;
   display: flex;
@@ -110,11 +78,11 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
 }
 
 /* 메인 컨테이너 */
-.login-container {
+.signup-container {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 400px;
+  max-width: 450px;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -164,8 +132,8 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
   font-weight: 500;
 }
 
-/* 로그인 카드 */
-.login-card {
+/* 회원가입 카드 */
+.signup-card {
   background: white;
   border-radius: 20px;
   padding: 40px;
@@ -195,7 +163,7 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
 }
 
 /* 폼 스타일 */
-.login-form {
+.signup-form {
   margin-bottom: 24px;
 }
 
@@ -248,8 +216,6 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
   font-weight: 400;
 }
 
-
-
 .password-toggle {
   position: absolute;
   right: 16px;
@@ -280,12 +246,10 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
 
 /* 폼 옵션 */
 .form-options {
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   margin-bottom: 32px;
-  flex-wrap: nowrap !important;
-  flex-direction: row !important;
 }
 
 .checkbox-wrapper {
@@ -308,6 +272,7 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
   position: relative;
   transition: all 0.2s ease;
   background: white;
+  flex-shrink: 0;
 }
 
 .checkbox-wrapper input:checked + .checkmark {
@@ -333,25 +298,8 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
   font-weight: 500;
 }
 
-.forgot-link {
-  color: #3b82f6;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  transition: color 0.2s ease;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-}
-
-.forgot-link:hover {
-  color: #2563eb;
-  text-decoration: underline;
-}
-
-/* 로그인 버튼 */
-.login-btn {
+/* 회원가입 버튼 */
+.signup-btn {
   width: 100%;
   padding: 16px 24px;
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
@@ -369,16 +317,16 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-.login-btn:hover:not(:disabled) {
+.signup-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
 }
 
-.login-btn:active {
+.signup-btn:active {
   transform: translateY(0);
 }
 
-.login-btn:disabled {
+.signup-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
@@ -404,8 +352,8 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
   font-weight: 500;
 }
 
-/* 소셜 로그인 */
-.social-login {
+/* 소셜 회원가입 */
+.social-signup {
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -450,17 +398,17 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
 }
 
 /* 푸터 */
-.login-footer {
+.signup-footer {
   text-align: center;
   margin-top: 20px;
 }
 
-.login-footer p {
+.signup-footer p {
   font-size: 14px;
   color: #64748b;
 }
 
-.signup-link {
+.login-link {
   color: #3b82f6;
   text-decoration: none;
   font-weight: 500;
@@ -472,7 +420,7 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
   font-size: inherit;
 }
 
-.signup-link:hover {
+.login-link:hover {
   color: #2563eb;
   text-decoration: underline;
 }
@@ -518,24 +466,11 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
   color: #10b981;
 }
 
-/* 알림 메시지 기본 스타일 (상위에서 오버라이드됨) */
 .notification-message {
   font-size: 16px;
   color: #374151;
   font-weight: 600;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-}
-
-/* 최종 강제 적용 - 모든 가능한 선택자 */
-* .notification-message,
-* .notification .notification-message,
-* .notification-content .notification-message,
-* span.notification-message {
-  font-size: 16px !important;
-  color: #374151 !important;
-  font-weight: 600 !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-  line-height: 1.4 !important;
 }
 
 /* 애니메이션 */
@@ -558,15 +493,15 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
 
 /* 반응형 디자인 */
 @media (max-width: 480px) {
-  .login-page {
+  .signup-page {
     padding: 16px 16px 40px 16px;
   }
   
-  .login-container {
+  .signup-container {
     max-width: 100%;
   }
   
-  .login-card {
+  .signup-card {
     padding: 32px 24px;
   }
   
@@ -578,13 +513,6 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
     font-size: 24px;
   }
   
-  .form-options {
-    flex-direction: row !important;
-    gap: 12px;
-    align-items: center !important;
-    flex-wrap: wrap;
-  }
-  
   .notification {
     left: 16px;
     right: 16px;
@@ -593,7 +521,7 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
 }
 
 @media (max-width: 360px) {
-  .login-card {
+  .signup-card {
     padding: 24px 20px;
   }
   
@@ -605,3 +533,4 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
     font-size: 20px;
   }
 }
+

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../styles/login.css';
 
-const Login = ({ onLogin }) => {
+const Login = ({ onLogin, onSignupClick }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -222,7 +222,7 @@ const Login = ({ onLogin }) => {
 
         {/* 푸터 */}
         <div className="login-footer">
-          <p>계정이 없으신가요? <button type="button" className="signup-link">회원가입</button></p>
+          <p>계정이 없으신가요? <button type="button" className="signup-link" onClick={onSignupClick}>회원가입</button></p>
         </div>
       </div>
 
