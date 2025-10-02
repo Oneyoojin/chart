@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../styles/login.css';
+  import { login } from '../api/auth';
 
 const Login = ({ onLogin, onSignupClick }) => {
   const [formData, setFormData] = useState({
@@ -73,9 +74,11 @@ const Login = ({ onLogin, onSignupClick }) => {
     
     setIsLoading(true);
     
-    try {
+    //try {
       // 로그인 시뮬레이션
-      await simulateLogin();
+      //await simulateLogin();
+    try{
+      await login({ email: formData.email, password: formData.password});
       showNotification('success', '로그인 성공! 환영합니다.', '🎉');
       
       // 1.5초 후 퀴즈로 이동
@@ -91,7 +94,7 @@ const Login = ({ onLogin, onSignupClick }) => {
   };
 
   // 로그인 시뮬레이션
-  const simulateLogin = () => {
+  /*const simulateLogin = () => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         // 데모 계정: demo@dashboard.com / password
@@ -102,7 +105,9 @@ const Login = ({ onLogin, onSignupClick }) => {
         }
       }, 1600);
     });
-  };
+  };*/
+
+
 
   // 비밀번호 표시 토글
   const togglePasswordVisibility = () => {

@@ -21,3 +21,16 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+backend/.env
+backend/alembic.ini
+backend/alembic
+
+node_modules
+x-ray
+backend/app/__pycache__
+backend/app/core/__pycache__
+backend/app/models/__pycache__
+backend/app/routers/__pycache__
+backend/app/schemas/__pycache__
+backend/app/services/__pycache__

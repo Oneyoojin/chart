@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import '../styles/dashboard.css';
+import { getSummary, getAttempts } from '../api/stats';
 
 const Dashboard = () => {
   // 상태
@@ -9,6 +10,8 @@ const Dashboard = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [summary, setSummary] = useState(null);
+  const [attempts, setAttempts] = useState([]);
 
   // 폼 상태
   const [formData, setFormData] = useState({
@@ -45,6 +48,11 @@ const Dashboard = () => {
       }
     };
     initializeApp();
+  }, []);
+
+  useEffect(() => {
+    getSummary().then(setSummary);
+    getAttempts(20).then(setAttempts);
   }, []);
 
   // 통계 계산 및 애니메이션
@@ -529,6 +537,56 @@ const Dashboard = () => {
                 <h3 className="stat-value" id="total-customers">{displayTotalCustomers.toLocaleString()}</h3>
                 <p className="stat-label">고객 수</p>
               </div>
+            </div>
+          </div>
+        </section>
+
+
+        {/* [추가] 퀴즈 요약 섹션 (서버 데이터) */}
+        <section className="stats-section">
+          <div className="stats-container">
+            <div className="stat-card">
+              <div className="stat-info">
+                <h3 className="stat-value">{summary ? summary.totalAnswered : 0}</h3>
+                <p className="stat-label">총 풀이수</p>
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-info">
+                <h3 className="stat-value">{summary ? summary.correctCount : 0}</h3>
+                <p className="stat-label">정답수</p>
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-info">
+                <h3 className="stat-value">
+                  {summary ? `${(summary.accuracy * 100).toFixed(1)}%` : "0%"}
+                </h3>
+                <p className="stat-label">정확도</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* [추가] 최근 풀이 섹션 (서버 데이터) */}
+        <section className="data-section">
+          <div className="data-container">
+            <div className="section-header"><h2>최근 풀이</h2></div>
+            <div className="table-wrapper">
+              <table className="data-table">
+                <thead>
+                  <tr><th>시간</th><th>문제</th><th>결과</th></tr>
+                </thead>
+                <tbody>
+                  {attempts.map(a => (
+                    <tr key={a.id}>
+                      <td>{a.answered_at.replace('T',' ').slice(0,16)}</td>
+                      <td>{a.quiz_title}</td>
+                      <td>{a.correct ? "O" : "X"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </section>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/signup.css';
+import { register, login } from '../api/auth';
 
 const Signup = ({ onSignup, onBackToLogin }) => {
   const [formData, setFormData] = useState({
@@ -112,8 +113,8 @@ const Signup = ({ onSignup, onBackToLogin }) => {
     setIsLoading(true);
     
     try {
-      // 회원가입 시뮬레이션
-      await simulateSignup();
+      await register({email: formData.email, password: formData.password, nickname: formData.nickname});
+      await login({ email: formData.email, password: formData.password});
       showNotification('success', '회원가입 성공! 환영합니다.', '🎉');
       
       // 1.5초 후 로그인 페이지로 이동
@@ -128,19 +129,7 @@ const Signup = ({ onSignup, onBackToLogin }) => {
     }
   };
 
-  // 회원가입 시뮬레이션
-  const simulateSignup = () => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        // 이메일 중복 체크 시뮬레이션
-        if (formData.email === 'demo@dashboard.com') {
-          reject(new Error('이미 사용 중인 이메일입니다.'));
-        } else {
-          resolve({ success: true });
-        }
-      }, 1600);
-    });
-  };
+ 
 
   // 비밀번호 표시 토글
   const togglePasswordVisibility = () => {
