@@ -9,6 +9,11 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str | None = None
     ALLOW_ORIGINS: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
 
+    # Qwen2.5(Ollama)설정
+    LLM_BASE_URL: str = "http://localhost:11434/v1"
+    LLM_MODEL: str = "qwen2.5:3b-instruct"
+    LLM_API_KEY: str = "ollama"
+
     #v2 setting
     model_config = SettingsConfigDict(
         env_file=".env",
