@@ -2,7 +2,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE, // 예: http://localhost:8000
+  baseURL: process.env.REACT_APP_API_BASE || "http://localhost:8000",
 });
 
 api.interceptors.request.use((config) => {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../styles/signup.css';
 import { register, login } from '../api/auth';
 
-const Signup = ({ onSignup, onBackToLogin }) => {
+const Signup = ({ onSignup, onBackToLogin, onBackToMain }) => {
   const [formData, setFormData] = useState({
     nickname: '',
     email: '',
@@ -15,6 +15,23 @@ const Signup = ({ onSignup, onBackToLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: '', type: '' });
+
+  // 브라우저 뒤로가기 감지
+  useEffect(() => {
+    const handlePopState = (event) => {
+      event.preventDefault();
+      onBackToMain();
+    };
+
+    // 히스토리 엔트리 추가
+    window.history.pushState(null, '', window.location.href);
+    
+    window.addEventListener('popstate', handlePopState);
+    
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [onBackToMain]);
 
   // Signup 페이지 전용 body 스타일 적용
   useEffect(() => {
@@ -165,7 +182,7 @@ const Signup = ({ onSignup, onBackToLogin }) => {
             <div className="logo-icon">
               <i className="fas fa-chart-line"></i>
             </div>
-            <h1>Dashboard</h1>
+            <h1>의료 데이터 분석 및 학습 자동화</h1>
           </div>
           <p className="tagline">데이터 분석의 새로운 시작</p>
         </div>

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import '../styles/dashboard.css';
 import { getSummary, getAttempts } from '../api/stats';
 
-const Dashboard = () => {
+const Dashboard = ({ onBackToMain }) => {
   // 상태
   const [salesData, setSalesData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -51,8 +51,36 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    getSummary().then(setSummary);
-    getAttempts(20).then(setAttempts);
+    // 더미 데이터 사용
+    const fetchData = async () => {
+      try {
+        const summaryData = await getSummary();
+        setSummary(summaryData);
+      } catch (error) {
+        console.log('백엔드 연결 실패, 더미 summary 데이터 사용');
+        setSummary({
+          total_attempts: 15,
+          correct_count: 12,
+          accuracy: 80.0
+        });
+      }
+
+      try {
+        const attemptsData = await getAttempts(20);
+        setAttempts(attemptsData);
+      } catch (error) {
+        console.log('백엔드 연결 실패, 더미 attempts 데이터 사용');
+        setAttempts([
+          { quiz_title: "샘플 문제 1", correct: true, answered_at: new Date().toISOString() },
+          { quiz_title: "샘플 문제 2", correct: false, answered_at: new Date().toISOString() },
+          { quiz_title: "샘플 문제 3", correct: true, answered_at: new Date().toISOString() },
+          { quiz_title: "샘플 문제 4", correct: true, answered_at: new Date().toISOString() },
+          { quiz_title: "샘플 문제 5", correct: true, answered_at: new Date().toISOString() }
+        ]);
+      }
+    };
+    
+    fetchData();
   }, []);
 
   // 통계 계산 및 애니메이션
@@ -472,7 +500,7 @@ const Dashboard = () => {
           <div className="nav-left">
             <div className="nav-logo">
               <i className="fas fa-chart-line"></i>
-              <span className="nav-title">Dashboard</span>
+              <span className="nav-title">의료 데이터 분석 및 학습 자동화</span>
             </div>
             <div className="nav-links">
               <a href="#dashboard" className="nav-link active">대시보드</a>
@@ -482,8 +510,9 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="nav-right">
-            <button className="nav-search-btn" aria-label="검색">
-              <i className="fas fa-search"></i>
+            <button className="nav-home-btn" onClick={onBackToMain} aria-label="메인으로">
+              <i className="fas fa-home"></i>
+              <span>메인으로</span>
             </button>
           </div>
         </div>
@@ -499,65 +528,31 @@ const Dashboard = () => {
           </div>
         </section>
 
-        {/* 통계 카드 섹션 */}
-        <section className="stats-section">
-          <div className="stats-container">
-            <div className="stat-card">
-              <div className="stat-icon">
-                <i className="fas fa-chart-line"></i>
-              </div>
-              <div className="stat-info">
-                <h3 className="stat-value" id="total-sales">{`₩${displayTotalSales.toLocaleString()}`}</h3>
-                <p className="stat-label">총 매출</p>
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">
-                <i className="fas fa-shopping-cart"></i>
-              </div>
-              <div className="stat-info">
-                <h3 className="stat-value" id="total-orders">{displayTotalOrders.toLocaleString()}</h3>
-                <p className="stat-label">총 주문</p>
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">
-                <i className="fas fa-box"></i>
-              </div>
-              <div className="stat-info">
-                <h3 className="stat-value" id="total-products">{displayTotalProducts}</h3>
-                <p className="stat-label">상품 수</p>
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">
-                <i className="fas fa-users"></i>
-              </div>
-              <div className="stat-info">
-                <h3 className="stat-value" id="total-customers">{displayTotalCustomers.toLocaleString()}</h3>
-                <p className="stat-label">고객 수</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-
         {/* [추가] 퀴즈 요약 섹션 (서버 데이터) */}
         <section className="stats-section">
           <div className="stats-container">
             <div className="stat-card">
+              <div className="stat-icon">
+                <i className="fas fa-list-ol"></i>
+              </div>
               <div className="stat-info">
                 <h3 className="stat-value">{summary ? summary.totalAnswered : 0}</h3>
                 <p className="stat-label">총 풀이수</p>
               </div>
             </div>
             <div className="stat-card">
+              <div className="stat-icon">
+                <i className="fas fa-check-circle"></i>
+              </div>
               <div className="stat-info">
                 <h3 className="stat-value">{summary ? summary.correctCount : 0}</h3>
                 <p className="stat-label">정답수</p>
               </div>
             </div>
             <div className="stat-card">
+              <div className="stat-icon">
+                <i className="fas fa-chart-pie"></i>
+              </div>
               <div className="stat-info">
                 <h3 className="stat-value">
                   {summary ? `${(summary.accuracy * 100).toFixed(1)}%` : "0%"}
@@ -638,210 +633,7 @@ const Dashboard = () => {
           </div>
         </section>
 
-        {/* 데이터 테이블 섹션 */}
-        <section className="data-section" id="data">
-          <div className="data-container">
-            <div className="section-header">
-              <h2>판매 데이터</h2>
-              <p>최근 판매 데이터를 테이블 형태로 확인하고 관리하세요</p>
-            </div>
-
-            {/* 테이블 컨트롤 */}
-            <div className="table-controls">
-              <div className="search-box">
-                <i className="fas fa-search"></i>
-                <input
-                  type="text"
-                  id="search-input"
-                  placeholder="검색..."
-                  value={searchTerm}
-                  onChange={handleSearch}
-                />
-              </div>
-              <button className="add-btn" id="add-data-btn" onClick={() => openModal()}>
-                <i className="fas fa-plus"></i>
-                데이터 추가
-              </button>
-            </div>
-
-            {/* 데이터 테이블 */}
-            <div className="table-wrapper">
-              <table className="data-table" id="sales-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>제품명</th>
-                    <th>카테고리</th>
-                    <th>가격</th>
-                    <th>수량</th>
-                    <th>총 금액</th>
-                    <th>판매일</th>
-                    <th>지역</th>
-                    <th>액션</th>
-                  </tr>
-                </thead>
-                <tbody id="sales-table-body">
-                  {pageData.slice.map(item => (
-                    <tr key={item.id}>
-                      <td>{item.id ? `${String(item.id).substring(0, 8)}...` : 'N/A'}</td>
-                      <td><strong>{item.product_name}</strong></td>
-                      <td>
-                        <span className={`category-badge category-${(item.category || '').replace(/\s+/g, '').toLowerCase()}`}>
-                          {item.category}
-                        </span>
-                      </td>
-                      <td>{`₩${(item.price || 0).toLocaleString()}`}</td>
-                      <td>{item.quantity || 0}</td>
-                      <td><strong>{`₩${(item.total_amount || 0).toLocaleString()}`}</strong></td>
-                      <td>{formatDate(item.sale_date)}</td>
-                      <td>{item.region || 'N/A'}</td>
-                      <td>
-                        <button className="action-btn edit" onClick={() => editData(item.id)}>
-                          <i className="fas fa-edit"></i>
-                        </button>
-                        <button className="action-btn delete" onClick={() => deleteData(item.id)}>
-                          <i className="fas fa-trash"></i>
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* 페이지네이션 */}
-            <div className="pagination">
-              <button className="pagination-btn" id="prev-btn" disabled={currentPage === 1} onClick={() => changePage(currentPage - 1)}>
-                <i className="fas fa-chevron-left"></i>
-              </button>
-              <div className="pagination-numbers" id="pagination-numbers">
-                {Array.from({ length: paginationButtons.endPage - paginationButtons.startPage + 1 }, (_, idx) => {
-                  const page = paginationButtons.startPage + idx;
-                  return (
-                    <button
-                      key={page}
-                      className={`page-number ${page === currentPage ? 'active' : ''}`}
-                      onClick={() => changePage(page)}
-                    >
-                      {page}
-                    </button>
-                  );
-                })}
-              </div>
-              <button className="pagination-btn" id="next-btn" disabled={currentPage === paginationButtons.pages} onClick={() => changePage(currentPage + 1)}>
-                <i className="fas fa-chevron-right"></i>
-              </button>
-            </div>
-          </div>
-        </section>
       </main>
-
-      {/* 모달 창 - 데이터 추가/편집 */}
-      <div
-        className={`modal ${modalOpen ? 'active' : ''}`}
-        id="data-modal"
-        onMouseDown={(e) => { if (e.target === e.currentTarget) closeModal(); }}
-      >
-        <div className="modal-content">
-          <div className="modal-header">
-            <h3 id="modal-title">{isEditMode ? '데이터 수정' : '데이터 추가'}</h3>
-            <button className="modal-close" id="modal-close" onClick={closeModal} aria-label="모달 닫기">
-              <i className="fas fa-times"></i>
-            </button>
-          </div>
-          <form className="modal-form" id="data-form" onSubmit={handleFormSubmit}>
-            <div className="form-group">
-              <label htmlFor="product-name">제품명</label>
-              <input
-                type="text"
-                id="product-name"
-                name="product_name"
-                required
-                value={formData.product_name}
-                onChange={e => setFormData({ ...formData, product_name: e.target.value })}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="category">카테고리</label>
-              <select
-                id="category"
-                name="category"
-                required
-                value={formData.category}
-                onChange={e => setFormData({ ...formData, category: e.target.value })}
-              >
-                <option value="">선택하세요</option>
-                <option value="iPhone">iPhone</option>
-                <option value="iPad">iPad</option>
-                <option value="Mac">Mac</option>
-                <option value="Apple Watch">Apple Watch</option>
-                <option value="AirPods">AirPods</option>
-                <option value="Accessories">Accessories</option>
-              </select>
-            </div>
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="price">가격 (₩)</label>
-                <input
-                  type="number"
-                  id="price"
-                  name="price"
-                  required
-                  value={formData.price}
-                  onChange={e => setFormData({ ...formData, price: e.target.value })}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="quantity">수량</label>
-                <input
-                  type="number"
-                  id="quantity"
-                  name="quantity"
-                  required
-                  value={formData.quantity}
-                  onChange={e => setFormData({ ...formData, quantity: e.target.value })}
-                />
-              </div>
-            </div>
-            <div className="form-group">
-              <label htmlFor="sale-date">판매일</label>
-              <input
-                type="date"
-                id="sale-date"
-                name="sale_date"
-                required
-                value={formData.sale_date}
-                onChange={e => setFormData({ ...formData, sale_date: e.target.value })}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="region">지역</label>
-              <select
-                id="region"
-                name="region"
-                required
-                value={formData.region}
-                onChange={e => setFormData({ ...formData, region: e.target.value })}
-              >
-                <option value="">선택하세요</option>
-                <option value="서울">서울</option>
-                <option value="부산">부산</option>
-                <option value="대구">대구</option>
-                <option value="인천">인천</option>
-                <option value="광주">광주</option>
-                <option value="대전">대전</option>
-                <option value="울산">울산</option>
-                <option value="세종">세종</option>
-              </select>
-            </div>
-            <div className="form-actions">
-              <button type="button" className="btn-secondary" id="cancel-btn" onClick={closeModal}>취소</button>
-              <button type="submit" className="btn-primary">저장</button>
-            </div>
-          </form>
-        </div>
-      </div>
-
     </>
   );
 };

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/login.css';
   import { login } from '../api/auth';
 
-const Login = ({ onLogin, onSignupClick }) => {
+const Login = ({ onLogin, onSignupClick, onBackToMain }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -11,6 +11,19 @@ const Login = ({ onLogin, onSignupClick }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: '', type: '' });
+
+  // 브라우저 뒤로가기 감지
+  useEffect(() => {
+    const handlePopState = (event) => {
+      event.preventDefault();
+      onBackToMain();
+    };
+    window.history.pushState(null, '', window.location.href);
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [onBackToMain]);
 
   // 폼 데이터 변경
   const handleInputChange = (e) => {
@@ -74,9 +87,19 @@ const Login = ({ onLogin, onSignupClick }) => {
     
     setIsLoading(true);
     
-    //try {
-      // 로그인 시뮬레이션
-      //await simulateLogin();
+    // 임시 계정 체크 (프론트엔드에서 처리)
+    if (formData.email === 'demo@test.com' && formData.password === 'demo1234') {
+      localStorage.setItem('access_token', 'temp_demo_token_12345');
+      localStorage.setItem('user_email', formData.email);
+      showNotification('success', '로그인 성공! 환영합니다. (데모 모드)', '🎉');
+      setTimeout(() => {
+        onLogin();
+      }, 1500);
+      setIsLoading(false);
+      return;
+    }
+    
+    // 실제 백엔드 로그인
     try{
       await login({ email: formData.email, password: formData.password});
       showNotification('success', '로그인 성공! 환영합니다.', '🎉');
@@ -139,7 +162,7 @@ const Login = ({ onLogin, onSignupClick }) => {
             <div className="logo-icon">
               <i className="fas fa-chart-line"></i>
             </div>
-            <h1>Dashboard</h1>
+            <h1>의료 데이터 분석 및 학습 자동화</h1>
           </div>
           <p className="tagline">데이터 분석의 새로운 시작</p>
         </div>
@@ -148,7 +171,7 @@ const Login = ({ onLogin, onSignupClick }) => {
         <div className="login-card">
           <div className="card-header">
             <h2>환영합니다</h2>
-            <p>계정에 로그인하여 Dashboard를 시작하세요</p>
+            <p>계정에 로그인하여 의료 데이터 분석 및 학습 자동화를 시작하세요</p>
           </div>
 
           <form className="login-form" onSubmit={handleSubmit}>

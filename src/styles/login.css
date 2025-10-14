@@ -136,7 +136,7 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
 }
 
 .logo-icon {
-  width: 48px;
+  width: 56px;
   height: 48px;
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   border-radius: 12px;
@@ -144,18 +144,22 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  flex-shrink: 0;
 }
 
 .logo-icon i {
-  font-size: 24px;
+  font-size: 28px;
   color: white;
 }
 
 .logo h1 {
-  font-size: 32px;
+  font-size: 23px;
   font-weight: 700;
   color: #1e293b;
   letter-spacing: -0.02em;
+  line-height: 1.4;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .tagline {
@@ -182,7 +186,7 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
 }
 
 .card-header h2 {
-  font-size: 28px;
+  font-size: 25px;
   font-weight: 700;
   color: #1e293b;
   margin-bottom: 8px;
@@ -572,7 +576,7 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
   }
   
   .logo h1 {
-    font-size: 28px;
+    font-size: 25px;
   }
   
   .card-header h2 {
@@ -604,5 +608,86 @@ body.loginpage-body .login-page div.notification div.notification-content span.n
   
   .card-header h2 {
     font-size: 20px;
+  }
+}
+
+/* 뒤로가기 버튼 스타일 */
+.back-button-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e2e8f0;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.back-button:hover {
+  background: rgba(255, 255, 255, 1);
+  border-color: #3b82f6;
+  color: #3b82f6;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.back-button i {
+  font-size: 16px;
+}
+
+/* 데모 계정 안내 스타일 */
+.demo-info {
+  margin: 20px 0;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 12px;
+  border: 2px solid #fbbf24;
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.2);
+}
+
+.demo-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 15px;
+  color: #92400e;
+  margin: 0;
+  font-weight: 500;
+}
+
+.demo-text i {
+  font-size: 18px;
+  color: #f59e0b;
+  animation: pulse 2s infinite;
+}
+
+.demo-text strong {
+  color: #78350f;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
   }
 }

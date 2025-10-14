@@ -4,13 +4,14 @@ import '../styles/quiz.css';
 import { getRandomQuiz } from '../api/quiz';
 import { submitAnswer } from '../api/answer';
 
-const Quiz = ({ onComplete }) => {
+const Quiz = ({ onComplete, onBackToMain }) => {
   const [quiz, setQuiz] = useState(null);
   const [picked, setPicked] = useState(null);
   const [result, setResult] = useState(null); // { correct, correct_choice_id, explanation? }
   const [showFeedback, setShowFeedback] = useState(false);
-  const [showHint, setShowHint] = useState(false);
   const [isAnswered, setIsAnswered] = useState(false);
+  const [solvedCount, setSolvedCount] = useState(0); // 푼 문제 개수
+  const [totalQuizzes] = useState(5); // 전체 퀴즈 개수 (5문제)
 
   // 페이지 전용 body 스타일
   useEffect(() => {
@@ -18,14 +19,48 @@ const Quiz = ({ onComplete }) => {
     return () => document.body.classList.remove('quiz-body');
   }, []);
 
+  // 브라우저 뒤로가기 감지
+  useEffect(() => {
+    const handlePopState = (event) => {
+      event.preventDefault();
+      onBackToMain();
+    };
+
+    // 히스토리 엔트리 추가
+    window.history.pushState(null, '', window.location.href);
+    
+    window.addEventListener('popstate', handlePopState);
+    
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [onBackToMain]);
+
   // 첫 문제 로드
   useEffect(() => {
     loadRandom();
   }, []);
 
   const loadRandom = async () => {
-    const q = await getRandomQuiz();
-    setQuiz(q);
+    try {
+      const q = await getRandomQuiz();
+      setQuiz(q);
+    } catch (error) {
+      console.log('백엔드 연결 실패, 더미 데이터 사용');
+      // 더미 데이터 사용
+      const dummyQuiz = {
+        quiz_id: Math.random().toString(36).substr(2, 9),
+        quiz_title: "샘플 문제 " + Math.floor(Math.random() * 10 + 1),
+        image_url: "",
+        choices: [
+          { choice_id: 1, content: "선청성유문협착증" },
+          { choice_id: 2, content: "정상" },
+          { choice_id: 3, content: "변비" },
+          { choice_id: 4, content: "기복증" }
+        ]
+      };
+      setQuiz(dummyQuiz);
+    }
   };
 
   // 보기 선택 -> 채점(백엔드) -> LLM 해설 포함
@@ -34,16 +69,42 @@ const Quiz = ({ onComplete }) => {
     setPicked(choice_id);
     setIsAnswered(true);
 
-    const r = await submitAnswer({ quiz_id: quiz.quiz_id, choice_id });
-    // r.explanation: 오답일 때 백엔드가 생성. (OPENAI_API_KEY 없으면 fallback 문구)
-    setResult(r);
+    try {
+      const r = await submitAnswer({ quiz_id: quiz.quiz_id, choice_id });
+      setResult(r);
+    } catch (error) {
+      console.log('백엔드 연결 실패, 더미 결과 사용');
+      // 더미 결과 사용
+      const dummyResult = {
+        correct: Math.random() > 0.5,
+        correct_choice_id: Math.floor(Math.random() * 4) + 1,
+        explanation: "더미 해설입니다."
+      };
+      setResult(dummyResult);
+    }
+    
     setShowFeedback(true);
+    
+    // 2초 후 자동으로 다음 문제로 이동
+    setTimeout(() => {
+      handleNextQuestion();
+    }, 2000);
   };
 
   // 다음 문제
   const handleNextQuestion = async () => {
+    const newCount = solvedCount + 1;
+    setSolvedCount(newCount);
+    
+    // 5문제를 다 풀면 Dashboard로 이동
+    if (newCount >= totalQuizzes) {
+      setTimeout(() => {
+        onComplete();
+      }, 500);
+      return;
+    }
+    
     setShowFeedback(false);
-    setShowHint(false);
     setIsAnswered(false);
     setPicked(null);
     setResult(null);
@@ -63,29 +124,22 @@ const Quiz = ({ onComplete }) => {
       <div className="quiz-header">
         <h1>데이터 분석 퀴즈</h1>
         <p>데이터 분석에 대한 지식을 테스트해보세요!</p>
+        <div className="quiz-progress">
+          <span className="progress-text">{solvedCount + 1} / {totalQuizzes}</span>
+          <div className="progress-bar">
+            <div 
+              className="progress-fill" 
+              style={{ width: `${((solvedCount + 1) / totalQuizzes) * 100}%` }}
+            ></div>
+          </div>
+        </div>
       </div>
 
       <div className="quiz-content">
         <div className="question-card">
           <div className="question-header">
             <h2>{quiz.quiz_title}</h2>
-            <button
-              className="hint-btn"
-              onClick={() => setShowHint(v => !v)}
-              disabled={isAnswered}
-              type="button"
-            >
-              <i className="fas fa-lightbulb"></i> 힌트 보기
-            </button>
           </div>
-
-          {showHint && (
-            <div className="hint-box">
-              <i className="fas fa-info-circle"></i>
-              {/* DB의 quiz_text를 힌트처럼 노출 */}
-              <p>{quiz.quiz_text}</p>
-            </div>
-          )}
 
           <div className="question-layout">
             <div className="question-image">
