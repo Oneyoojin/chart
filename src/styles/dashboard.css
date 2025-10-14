@@ -82,6 +82,16 @@
     font-weight: 600;
 }
 
+.nav-link-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
 .nav-right {
     display: flex;
     align-items: center;

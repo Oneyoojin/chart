@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import '../styles/dashboard.css';
 
-const Dashboard = () => {
+const Dashboard = ({ onNavigateToTasks }) => {
   // 상태
   const [salesData, setSalesData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -471,6 +471,9 @@ const Dashboard = () => {
               <a href="#data" className="nav-link">데이터</a>
               <a href="#charts" className="nav-link">차트</a>
               <a href="#analytics" className="nav-link">분석</a>
+              <button onClick={onNavigateToTasks} className="nav-link nav-link-btn">
+                <i className="fas fa-tasks"></i> Tasks
+              </button>
             </div>
           </div>
           <div className="nav-right">

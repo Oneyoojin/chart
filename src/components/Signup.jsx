@@ -15,14 +15,6 @@ const Signup = ({ onSignup, onBackToLogin }) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: '', type: '' });
 
-  // Signup 페이지 전용 body 스타일 적용
-  useEffect(() => {
-    document.body.classList.add('signuppage-body');
-    return () => {
-      document.body.classList.remove('signuppage-body');
-    };
-  }, []);
-
   // 폼 데이터 변경
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
