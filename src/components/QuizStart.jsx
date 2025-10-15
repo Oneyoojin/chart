@@ -17,66 +17,70 @@ const QuizStart = ({ onStartQuiz, onBackToMain }) => {
 
   return (
     <div className="quiz-start-page">
+      {/* 배경 */}
       <div className="background">
         <div className="bg-pattern"></div>
         <div className="bg-gradient"></div>
       </div>
+
+      {/* 메인 컨테이너 */}
       <div className="quiz-start-container">
-        {/* 뒤로가기 버튼 (아이콘만) */}
-        <div className="back-button-container">
-          <button className="back-button" onClick={onBackToMain}>
-            <i className="fas fa-arrow-left"></i>
+        {/* 헤더 */}
+        <header className="quiz-header">
+          <div className="header-icon">
+            <i className="fas fa-user-md"></i>
+          </div>
+          <h1 className="header-title">의료 데이터 분석 및 학습 자동화</h1>
+          <p className="header-subtitle">소아 복부 X-ray 판독 능력 향상</p>
+        </header>
+
+        {/* 메인 카드 */}
+        <div className="main-card">
+          <h2 className="card-title">소아 복부 X-ray 퀴즈</h2>
+          <p className="card-subtitle">실전 판독 능력을 키워보세요</p>
+
+          {/* 정보 카드들 */}
+          <div className="info-cards">
+            <div className="info-card">
+              <div className="info-icon-wrapper">
+                <i className="fas fa-x-ray"></i>
+              </div>
+              <div className="info-content">
+                <h3>5개의 문제</h3>
+                <p>소아 복부 X-ray 판독 문제를 풀어보세요</p>
+              </div>
+            </div>
+
+            <div className="info-card">
+              <div className="info-icon-wrapper">
+                <i className="fas fa-clock"></i>
+              </div>
+              <div className="info-content">
+                <h3>자유로운 시간</h3>
+                <p>시간 제한 없이 천천히 학습하세요</p>
+              </div>
+            </div>
+
+            <div className="info-card">
+              <div className="info-icon-wrapper">
+                <i className="fas fa-bars"></i>
+              </div>
+              <div className="info-content">
+                <h3>AI 피드백</h3>
+                <p>오답 시 AI가 상세한 해설을 제공합니다</p>
+              </div>
+            </div>
+          </div>
+
+          {/* 시작 버튼 */}
+          <button className="start-quiz-btn" onClick={onStartQuiz}>
+            퀴즈 시작하기
+            <i className="fas fa-arrow-right"></i>
           </button>
         </div>
 
-        <section className="quiz-intro-section">
-          <div className="intro-content">
-            <div className="quiz-icon">
-              <i className="fas fa-brain"></i>
-            </div>
-            <h1 className="quiz-title">데이터 분석 퀴즈</h1>
-            <p className="quiz-subtitle">당신의 데이터 분석 지식을 테스트해보세요</p>
-          </div>
-        </section>
-
-        <section className="quiz-info-section">
-          <div className="info-grid">
-            <div className="info-card">
-              <div className="info-icon">
-                <i className="fas fa-list-ol"></i>
-              </div>
-              <h3>5개의 문제</h3>
-              <p>다양한 데이터 분석 주제를 다룹니다</p>
-            </div>
-
-            <div className="info-card">
-              <div className="info-icon">
-                <i className="fas fa-clock"></i>
-              </div>
-              <h3>자유로운 시간</h3>
-              <p>시간 제한 없이 천천히 풀어보세요</p>
-            </div>
-
-            <div className="info-card">
-              <div className="info-icon">
-                <i className="fas fa-briefcase"></i>
-              </div>
-              <h3>실무 중심</h3>
-              <p>실제 업무에서 활용할 수 있는 내용입니다</p>
-            </div>
-          </div>
-        </section>
-
-        <section className="quiz-start-section">
-          <div className="start-content">
-            <h2>퀴즈 시작하기</h2>
-            <p>준비가 되셨나요? 지금 바로 시작해보세요!</p>
-            <button className="start-quiz-btn" onClick={onStartQuiz}>
-              <i className="fas fa-play"></i>
-              퀴즈 시작하기
-            </button>
-          </div>
-        </section>
+        {/* 하단 텍스트 */}
+        <p className="footer-text">준비가 되셨나요? 실전 판독 훈련을 시작하세요!</p>
       </div>
     </div>
   );

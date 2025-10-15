@@ -116,22 +116,6 @@ const Login = ({ onLogin, onSignupClick, onBackToMain }) => {
     }
   };
 
-  // 로그인 시뮬레이션
-  /*const simulateLogin = () => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        // 데모 계정: demo@dashboard.com / password
-        if (formData.email === 'demo@dashboard.com' && formData.password === 'password') {
-          resolve({ success: true });
-        } else {
-          reject(new Error('이메일 또는 비밀번호가 올바르지 않습니다.'));
-        }
-      }, 1600);
-    });
-  };*/
-
-
-
   // 비밀번호 표시 토글
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
