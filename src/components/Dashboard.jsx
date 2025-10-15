@@ -111,47 +111,7 @@ const Dashboard = ({ onBackToMain }) => {
       return;
     }
 
-    // 월별 데이터
-    const monthly = aggregateMonthlyData(salesData);
-    if (salesTrendRef.current) {
-      if (salesTrendInstance.current) salesTrendInstance.current.destroy();
-      salesTrendInstance.current = new ChartGlobal(salesTrendRef.current, {
-        type: 'line',
-        data: {
-          labels: monthly.labels,
-          datasets: [{
-            label: '매출 (원)',
-            data: monthly.data,
-            borderColor: '#007AFF',
-            backgroundColor: 'rgba(0, 122, 255, 0.1)',
-            borderWidth: 3,
-            fill: true,
-            tension: 0.4,
-            pointBackgroundColor: '#007AFF',
-            pointBorderColor: '#fff',
-            pointBorderWidth: 2,
-            pointRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: true,
-          aspectRatio: 16/9,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { grid: { display: false }, ticks: { color: '#86868B' } },
-            y: {
-              grid: { color: 'rgba(134, 134, 139, 0.2)' },
-              ticks: {
-                color: '#86868B',
-                callback: value => '₩' + (Number(value) / 1000000).toFixed(0) + 'M'
-              }
-            }
-          }
-        }
-      });
-    }
-
+    
     // 제품별 데이터
     const product = aggregateProductData(salesData);
     if (productPieRef.current) {
@@ -187,10 +147,10 @@ const Dashboard = ({ onBackToMain }) => {
         data: {
           labels: region.labels,
           datasets: [{
-            label: '판매량',
+            label: '문제수',
             data: region.data,
             backgroundColor: '#007AFF',
-            borderRadius: 8,
+            borderRadius: 7,
             borderSkipped: false
           }]
         },
@@ -255,8 +215,8 @@ const Dashboard = ({ onBackToMain }) => {
 
   // 데이터 로드 함수 (백엔드 연결 전: 더미데이터 사용)
   const loadSalesData = async () => {
-    const categories = ['iPhone', 'iPad', 'Mac', 'Apple Watch', 'AirPods', 'Accessories'];
-    const regions = ['서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종'];
+    const categories = ['기복증', '변비', '정상', '공기액체음영', '선천성유문협착증'];
+    const regions = ['일', '월', '화', '수', '목', '금', '토'];
     const mock = Array.from({ length: 48 }).map((_, i) => {
       const category = categories[i % categories.length];
       const quantity = Math.floor(Math.random() * 9) + 1;
@@ -523,8 +483,8 @@ const Dashboard = ({ onBackToMain }) => {
         {/* 히어로 섹션 */}
         <section className="hero-section">
           <div className="hero-container">
-            <h1 className="hero-title">데이터 분석 대시보드</h1>
-            <p className="hero-subtitle">실시간 판매 데이터와 비즈니스 인사이트를 한눈에 확인하세요</p>
+            <h1 className="hero-title">결과 분석</h1>
+            <p className="hero-subtitle">학습자의 풀이패턴과 정답률을 알아보세요!</p>
           </div>
         </section>
 
@@ -590,30 +550,17 @@ const Dashboard = ({ onBackToMain }) => {
         <section className="charts-section" id="charts">
           <div className="charts-container">
             <div className="section-header">
-              <h2>비즈니스 분석 차트</h2>
-              <p>다양한 차트로 데이터를 시각화하여 비즈니스 트렌드를 파악하세요</p>
+              <h2>문제풀이 및 학습량 분석 차트</h2>
+              <p>본인의 문제 풀이경향과 약점을 파악하세요!</p>
             </div>
 
             <div className="charts-grid">
-              {/* 매출 트렌드 차트 */}
-              <div className="chart-card large">
-                <div className="chart-header">
-                  <h3>월별 매출 트렌드</h3>
-                  <div className="chart-controls">
-                    <button className="chart-btn active" type="button">12개월</button>
-                    <button className="chart-btn" type="button">6개월</button>
-                    <button className="chart-btn" type="button">3개월</button>
-                  </div>
-                </div>
-                <div className="chart-content">
-                  <canvas id="salesTrendChart" ref={salesTrendRef}></canvas>
-                </div>
-              </div>
+              
 
               {/* 제품별 판매 비율 */}
               <div className="chart-card">
                 <div className="chart-header">
-                  <h3>제품별 판매 비율</h3>
+                  <h3>문제풀이 비율</h3>
                 </div>
                 <div className="chart-content">
                   <canvas id="productPieChart" ref={productPieRef}></canvas>
@@ -623,7 +570,7 @@ const Dashboard = ({ onBackToMain }) => {
               {/* 지역별 판매 현황 */}
               <div className="chart-card">
                 <div className="chart-header">
-                  <h3>지역별 판매 현황</h3>
+                  <h3>일일 학습량</h3>
                 </div>
                 <div className="chart-content">
                   <canvas id="regionBarChart" ref={regionBarRef}></canvas>

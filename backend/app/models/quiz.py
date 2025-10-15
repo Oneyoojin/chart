@@ -1,7 +1,7 @@
 # app/models/quiz.py
 from sqlalchemy import Column, Integer, ForeignKey, Text, String, DateTime, func
 from sqlalchemy.orm import relationship
-from app.db import Base
+from ..db import Base
 
 class Quiz(Base):
     __tablename__ = "quiz"

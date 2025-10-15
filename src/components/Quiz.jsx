@@ -88,7 +88,7 @@ const Quiz = ({ onComplete, onBackToMain }) => {
     // 2초 후 자동으로 다음 문제로 이동
     setTimeout(() => {
       handleNextQuestion();
-    }, 2000);
+    }, 10000);
   };
 
   // 다음 문제
@@ -122,8 +122,8 @@ const Quiz = ({ onComplete, onBackToMain }) => {
   return (
     <div className="quiz-container">
       <div className="quiz-header">
-        <h1>데이터 분석 퀴즈</h1>
-        <p>데이터 분석에 대한 지식을 테스트해보세요!</p>
+        <h1>의료 데이터 분석 퀴즈</h1>
+        <p>해당 이미지를 보고 이미지에 해당하는 답을 고르세요!</p>
         <div className="quiz-progress">
           <span className="progress-text">{solvedCount + 1} / {totalQuizzes}</span>
           <div className="progress-bar">
