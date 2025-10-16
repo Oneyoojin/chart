@@ -1,456 +1,173 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+// src/components/Dashboard.jsx
+import React, { useEffect, useRef, useState } from 'react';
 import '../styles/dashboard.css';
-import { getSummary, getAttempts } from '../api/stats';
+import { getSummary, getAttempts, getDaily, getDistribution } from '../api/stats';
+import { fetchCategories } from '../api/categories';
 
 const Dashboard = ({ onBackToMain }) => {
-  // 상태
-  const [salesData, setSalesData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  // 상단 요약 + 최근 풀이
   const [summary, setSummary] = useState(null);
   const [attempts, setAttempts] = useState([]);
 
-  // 폼 상태
-  const [formData, setFormData] = useState({
-    product_name: '',
-    category: '',
-    price: '',
-    quantity: '',
-    sale_date: '',
-    region: ''
-  });
+  // 카테고리 드롭다운(‘의료 이미지’의 직계 자식만 노출)
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null); // null=전체
 
-  // 통계 애니메이션용 상태
-  const [displayTotalSales, setDisplayTotalSales] = useState(0);
-  const [displayTotalOrders, setDisplayTotalOrders] = useState(0);
-  const [displayTotalProducts, setDisplayTotalProducts] = useState(0);
-  const [displayTotalCustomers, setDisplayTotalCustomers] = useState(0);
+  // 차트 데이터
+  const [pieData, setPieData] = useState({ labels: [], data: [] });
+  const [dailyData, setDailyData] = useState({ labels: [], data: [] });
 
-  // 차트 refs
-  const salesTrendRef = useRef(null);
+  // 차트 인스턴스
   const productPieRef = useRef(null);
   const regionBarRef = useRef(null);
-  const salesTrendInstance = useRef(null);
   const productPieInstance = useRef(null);
   const regionBarInstance = useRef(null);
 
-  // 데이터 로드
-  useEffect(() => {
-    const initializeApp = async () => {
-      try {
-        await loadSalesData();
-      } catch (error) {
-        console.error('앱 초기화 중 오류 발생:', error);
-        showNotification('데이터 로딩 중 오류가 발생했습니다.', 'error');
-      }
-    };
-    initializeApp();
-  }, []);
-
-  useEffect(() => {
-    // 더미 데이터 사용
-    const fetchData = async () => {
-      try {
-        const summaryData = await getSummary();
-        setSummary(summaryData);
-      } catch (error) {
-        console.log('백엔드 연결 실패, 더미 summary 데이터 사용');
-        setSummary({
-          total_attempts: 15,
-          correct_count: 12,
-          accuracy: 80.0
-        });
-      }
-
-      try {
-        const attemptsData = await getAttempts(20);
-        setAttempts(attemptsData);
-      } catch (error) {
-        console.log('백엔드 연결 실패, 더미 attempts 데이터 사용');
-        setAttempts([
-          { quiz_title: "샘플 문제 1", correct: true, answered_at: new Date().toISOString() },
-          { quiz_title: "샘플 문제 2", correct: false, answered_at: new Date().toISOString() },
-          { quiz_title: "샘플 문제 3", correct: true, answered_at: new Date().toISOString() },
-          { quiz_title: "샘플 문제 4", correct: true, answered_at: new Date().toISOString() },
-          { quiz_title: "샘플 문제 5", correct: true, answered_at: new Date().toISOString() }
-        ]);
-      }
-    };
-    
-    fetchData();
-  }, []);
-
-  // 통계 계산 및 애니메이션
-  const statistics = useMemo(() => {
-    const totalSales = salesData.reduce((sum, item) => sum + (item.total_amount || 0), 0);
-    const totalOrders = salesData.length;
-    const uniqueProducts = new Set(salesData.map(item => item.product_name)).size;
-    const uniqueCustomers = Math.floor(totalOrders * 0.7);
-    return { totalSales, totalOrders, uniqueProducts, uniqueCustomers };
-  }, [salesData]);
-
-  useEffect(() => {
-    animateValue(0, statistics.totalSales, 1500, v => setDisplayTotalSales(v));
-    animateValue(0, statistics.totalOrders, 1200, v => setDisplayTotalOrders(v));
-    animateValue(0, statistics.uniqueProducts, 1000, v => setDisplayTotalProducts(v));
-    animateValue(0, statistics.uniqueCustomers, 1800, v => setDisplayTotalCustomers(v));
-  }, [statistics]);
-
-  // 차트 초기화/업데이트
-  useEffect(() => {
-    if (!salesData || salesData.length === 0) {
-      destroyCharts();
-      return;
-    }
-    const ChartGlobal = window.Chart;
-    if (!ChartGlobal) {
-      // Chart.js가 전역으로 로드되지 않은 경우 무시
-      return;
-    }
-
-    
-    // 제품별 데이터
-    const product = aggregateProductData(salesData);
-    if (productPieRef.current) {
-      if (productPieInstance.current) productPieInstance.current.destroy();
-      productPieInstance.current = new ChartGlobal(productPieRef.current, {
-        type: 'doughnut',
-        data: {
-          labels: product.labels,
-          datasets: [{
-            data: product.data,
-            backgroundColor: ['#007AFF', '#34C759', '#FF9500', '#FF3B30', '#5856D6', '#AF52DE'],
-            borderWidth: 0,
-            hoverBorderWidth: 2,
-            hoverBorderColor: '#fff'
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: true,
-          aspectRatio: 16/9,
-          cutout: '60%',
-          plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, color: '#1D1D1F' } } }
-        }
-      });
-    }
-
-    // 지역별 데이터
-    const region = aggregateRegionData(salesData);
-    if (regionBarRef.current) {
-      if (regionBarInstance.current) regionBarInstance.current.destroy();
-      regionBarInstance.current = new ChartGlobal(regionBarRef.current, {
-        type: 'bar',
-        data: {
-          labels: region.labels,
-          datasets: [{
-            label: '문제수',
-            data: region.data,
-            backgroundColor: '#007AFF',
-            borderRadius: 7,
-            borderSkipped: false
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: true,
-          aspectRatio: 16/9,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { grid: { display: false }, ticks: { color: '#86868B' } },
-            y: { grid: { color: 'rgba(134,134,139,0.2)' }, ticks: { color: '#86868B' } }
-          }
-        }
-      });
-    }
-
-    return destroyCharts;
-  }, [salesData]);
-
-  const destroyCharts = () => {
-    if (salesTrendInstance.current) { salesTrendInstance.current.destroy(); salesTrendInstance.current = null; }
-    if (productPieInstance.current) { productPieInstance.current.destroy(); productPieInstance.current = null; }
-    if (regionBarInstance.current) { regionBarInstance.current.destroy(); regionBarInstance.current = null; }
+  // ---------- helpers ----------
+  // '2025-01-20' -> '01/20'
+  const formatDateLabel = (iso) => {
+    const d = new Date(`${iso}T00:00:00`);
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${mm}/${dd}`;
   };
 
-  // 외부 스타일(알림, 배지 애니메이션) 주입
-  useEffect(() => {
-    const style = document.createElement('style');
-    style.textContent = `
-      @keyframes slideInFromRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-      @keyframes slideOutToRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
-      .category-badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; color: white; }
-      .category-iphone { background: #007AFF; }
-      .category-ipad { background: #34C759; }
-      .category-mac { background: #FF9500; }
-      .category-applewatch { background: #FF3B30; }
-      .category-airpods { background: #5856D6; }
-      .category-accessories { background: #AF52DE; }
-      .navbar { transition: transform 0.3s ease; }
-    `;
-    document.head.appendChild(style);
-    return () => { if (style.parentNode) style.parentNode.removeChild(style); };
-  }, []);
+  // 최신 날짜가 오른쪽이 되도록 오름차순 정렬 + 날짜 라벨 적용
+  const normalizeDaily = (daily) => {
+    const pairs = (daily.labels || []).map((iso, i) => ({ iso, value: daily.data?.[i] ?? 0 }));
+    pairs.sort((a, b) => (a.iso < b.iso ? -1 : a.iso > b.iso ? 1 : 0));
+    return {
+      labels: pairs.map(p => formatDateLabel(p.iso)),
+      data: pairs.map(p => p.value),
+    };
+  };
 
-  // 네비게이션 스크롤 효과
+  // 차트 인스턴스 정리 (누락되었던 부분)
+  const destroyCharts = () => {
+    if (productPieInstance.current) {
+      productPieInstance.current.destroy();
+      productPieInstance.current = null;
+    }
+    if (regionBarInstance.current) {
+      regionBarInstance.current.destroy();
+      regionBarInstance.current = null;
+    }
+  };
+
+  // 분포/일일 한 번에 새로고침
+  const refreshCharts = async (categoryId) => {
+    const [dist, daily] = await Promise.all([
+      getDistribution(categoryId).catch(() => ({ labels: [], data: [] })),
+      getDaily(7, categoryId).catch(() => ({ labels: [], data: [] })),
+    ]);
+    setPieData(dist || { labels: [], data: [] });
+    setDailyData(normalizeDaily(daily || { labels: [], data: [] }));
+  };
+
+  // ---------- 초기 로딩 ----------
   useEffect(() => {
+    (async () => {
+      // 요약/최근
+      try { setSummary(await getSummary()); }
+      catch { setSummary({ totalAnswered: 15, correctCount: 12, accuracy: 0.8 }); }
+
+      try { setAttempts(await getAttempts(20)); }
+      catch {
+        const now = new Date().toISOString();
+        setAttempts([
+          { id: 1, quiz_title: '샘플 문제 1', correct: true, answered_at: now },
+          { id: 2, quiz_title: '샘플 문제 2', correct: false, answered_at: now },
+          { id: 3, quiz_title: '샘플 문제 3', correct: true, answered_at: now },
+        ]);
+      }
+
+      // 카테고리: ‘의료 이미지’ 루트의 자식만 노출
+      let all = [];
+      try { all = await fetchCategories(); } catch {}
+      const roots = all.filter(c => c.parent_id == null);
+      const medicalRoot = roots.find(r => r.category_name === '의료 이미지') || roots[0] || null;
+      const children = medicalRoot ? all.filter(c => c.parent_id === medicalRoot.category_id) : [];
+      setCategories(children);
+
+      // 기본 선택: X-ray 우선, 없으면 첫 항목, 없으면 전체(null)
+      const defaultCat = children.find(c => c.category_name === 'X-ray') || children[0] || null;
+      const cid = defaultCat?.category_id ?? null;
+      setSelectedCategory(cid);
+
+      await refreshCharts(cid);
+    })();
+
+    // 네비게이션 숨김 효과
     let lastScrollTop = 0;
     const onScroll = () => {
       const navbar = document.querySelector('.navbar');
       if (!navbar) return;
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      if (scrollTop > lastScrollTop && scrollTop > 100) {
-        navbar.style.transform = 'translateY(-100%)';
-      } else {
-        navbar.style.transform = 'translateY(0)';
-      }
+      navbar.style.transform = scrollTop > lastScrollTop && scrollTop > 100 ? 'translateY(-100%)' : 'translateY(0)';
       lastScrollTop = scrollTop;
     };
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // 데이터 로드 함수 (백엔드 연결 전: 더미데이터 사용)
-  const loadSalesData = async () => {
-    const categories = ['기복증', '변비', '정상', '공기액체음영', '선천성유문협착증'];
-    const regions = ['일', '월', '화', '수', '목', '금', '토'];
-    const mock = Array.from({ length: 48 }).map((_, i) => {
-      const category = categories[i % categories.length];
-      const quantity = Math.floor(Math.random() * 9) + 1;
-      const price = [990000, 1290000, 1990000, 459000, 199000][i % 5];
-      const date = new Date();
-      date.setMonth(date.getMonth() - (i % 12));
-      return {
-        id: `mock-${i + 1}`,
-        product_name: `${category} ${i + 1}`,
-        category,
-        price,
-        quantity,
-        sale_date: date.toISOString().split('T')[0],
-        region: regions[i % regions.length],
-        total_amount: price * quantity
-      };
-    });
-    setSalesData(mock);
-    setCurrentPage(1);
-  };
+  // ---------- 카테고리 변경 시 재조회 ----------
+  useEffect(() => { refreshCharts(selectedCategory); }, [selectedCategory]);
 
-  // 페이지 데이터
-  const pageData = useMemo(() => {
-    const startIndex = (currentPage - 1) * 10;
-    const endIndex = startIndex + 10;
-    // 간단한 클라이언트 필터링 데모
-    const filtered = searchTerm
-      ? salesData.filter(item =>
-          [item.product_name, item.category, item.region]
-            .filter(Boolean)
-            .some(v => String(v).toLowerCase().includes(searchTerm.toLowerCase()))
-        )
-      : salesData;
-    const slice = filtered.slice(startIndex, endIndex);
-    return { slice, filteredTotal: filtered.length };
-  }, [salesData, currentPage, searchTerm]);
+  // ---------- 차트 렌더링 ----------
+  useEffect(() => {
+    const Chart = window.Chart;
+    if (!Chart) return;
 
-  // 페이지네이션 버튼
-  const paginationButtons = useMemo(() => {
-    const maxVisiblePages = 5;
-    const pages = Math.max(1, Math.ceil(pageData.filteredTotal / 10));
-    const startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-    const endPage = Math.min(pages, startPage + maxVisiblePages - 1);
-    return { startPage, endPage, pages };
-  }, [currentPage, pageData.filteredTotal]);
+    const hasPie = pieData.labels?.length && pieData.labels.length === pieData.data?.length;
+    const hasDaily = dailyData.labels?.length && dailyData.labels.length === dailyData.data?.length;
 
-  // 모달 열기/닫기
-  const openModal = (id = null) => {
-    const editMode = !!id;
-    setIsEditMode(editMode);
-    setEditingId(id);
-    setModalOpen(true);
-    document.body.style.overflow = 'hidden';
-    if (editMode && id) {
-      const item = salesData.find(x => x.id === id);
-      if (item) {
-        setFormData({
-          product_name: item.product_name || '',
-          category: item.category || '',
-          price: item.price ?? '',
-          quantity: item.quantity ?? '',
-          sale_date: item.sale_date || new Date().toISOString().split('T')[0],
-          region: item.region || ''
-        });
-      }
-    } else {
-      setFormData({
-        product_name: '',
-        category: '',
-        price: '',
-        quantity: '',
-        sale_date: new Date().toISOString().split('T')[0],
-        region: ''
+    // 도넛
+    if (productPieRef.current) {
+      if (productPieInstance.current) productPieInstance.current.destroy();
+      productPieInstance.current = new Chart(productPieRef.current, {
+        type: 'doughnut',
+        data: {
+          labels: hasPie ? pieData.labels : [],
+          datasets: [{
+            data: hasPie ? pieData.data : [],
+            backgroundColor: ['#007AFF', '#34C759', '#FF9500', '#FF3B30', '#5856D6', '#AF52DE'],
+            borderWidth: 0, hoverBorderWidth: 2, hoverBorderColor: '#fff'
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: true, aspectRatio: 16/9, cutout: '60%',
+          plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, color: '#1D1D1F' } } }
+        }
       });
     }
-  };
 
-  const closeModal = () => {
-    setModalOpen(false);
-    document.body.style.overflow = '';
-    setIsEditMode(false);
-    setEditingId(null);
-  };
-
-  // 폼 제출
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    const payload = {
-      product_name: formData.product_name,
-      category: formData.category,
-      price: parseInt(String(formData.price)) || 0,
-      quantity: parseInt(String(formData.quantity)) || 0,
-      sale_date: formData.sale_date,
-      region: formData.region,
-      total_amount: (parseInt(String(formData.price)) || 0) * (parseInt(String(formData.quantity)) || 0)
-    };
-    try {
-      let response;
-      if (isEditMode && editingId) {
-        response = await fetch(`tables/sales/${editingId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-      } else {
-        response = await fetch('tables/sales', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-      }
-      if (response.ok) {
-        closeModal();
-        await loadSalesData();
-        showNotification(isEditMode ? '데이터가 수정되었습니다.' : '데이터가 추가되었습니다.');
-      } else {
-        throw new Error('서버 응답 오류');
-      }
-    } catch (error) {
-      console.error('데이터 저장 실패:', error);
-      showNotification('데이터 저장 중 오류가 발생했습니다.', 'error');
-    }
-  };
-
-  const editData = (id) => openModal(id);
-
-  const deleteData = async (id) => {
-    // 간단 확인
-    if (!window.confirm('정말로 이 데이터를 삭제하시겠습니까?')) return;
-    try {
-      const response = await fetch(`tables/sales/${id}`, { method: 'DELETE' });
-      if (response.ok) {
-        await loadSalesData();
-        showNotification('데이터가 삭제되었습니다.');
-      } else {
-        throw new Error('서버 응답 오류');
-      }
-    } catch (error) {
-      console.error('데이터 삭제 실패:', error);
-      showNotification('데이터 삭제 중 오류가 발생했습니다.', 'error');
-    }
-  };
-
-  // 검색
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1);
-  };
-
-  // 페이지 변경
-  const changePage = (newPage) => {
-    setCurrentPage(p => {
-      const pages = paginationButtons.pages;
-      if (newPage >= 1 && newPage <= pages) return newPage;
-      return p;
-    });
-  };
-
-  // 유틸
-  const animateValue = (start, end, duration, setter) => {
-    const startTime = performance.now();
-    const step = (currentTime) => {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const easeOut = 1 - Math.pow(1 - progress, 3);
-      const current = Math.floor(start + (end - start) * easeOut);
-      setter(current);
-      if (progress < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ko-KR');
-  };
-
-  // 집계 함수들
-  const aggregateMonthlyData = (data) => {
-    const monthlyTotals = {};
-    (data || []).forEach(item => {
-      if (item && item.sale_date) {
-        const date = new Date(item.sale_date);
-        if (!isNaN(date)) {
-          const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-          monthlyTotals[key] = (monthlyTotals[key] || 0) + (item.total_amount || 0);
+    // 막대
+    if (regionBarRef.current) {
+      if (regionBarInstance.current) regionBarInstance.current.destroy();
+      regionBarInstance.current = new Chart(regionBarRef.current, {
+        type: 'bar',
+        data: {
+          labels: hasDaily ? dailyData.labels : [],
+          datasets: [{
+            label: '문제수',
+            data: hasDaily ? dailyData.data : [],
+            backgroundColor: '#007AFF', borderRadius: 7, borderSkipped: false
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: true, aspectRatio: 16/9,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: '#86868B' } },
+            y: { beginAtZero: true, grid: { color: 'rgba(134,134,139,0.2)' }, ticks: { color: '#86868B' } }
+          }
         }
-      }
-    });
-    const sorted = Object.entries(monthlyTotals).sort(([a], [b]) => a.localeCompare(b));
-    return {
-      labels: sorted.map(([month]) => {
-        const [year, monthNum] = month.split('-');
-        return `${year}년 ${monthNum}월`;
-      }),
-      data: sorted.map(([, total]) => total)
-    };
-  };
+      });
+    }
 
-  const aggregateProductData = (data) => {
-    const categoryTotals = {};
-    (data || []).forEach(item => {
-      if (item && item.category) {
-        categoryTotals[item.category] = (categoryTotals[item.category] || 0) + (item.quantity || 0);
-      }
-    });
-    return { labels: Object.keys(categoryTotals), data: Object.values(categoryTotals) };
-  };
-
-  const aggregateRegionData = (data) => {
-    const regionTotals = {};
-    (data || []).forEach(item => {
-      if (item && item.region) {
-        regionTotals[item.region] = (regionTotals[item.region] || 0) + (item.quantity || 0);
-      }
-    });
-    return { labels: Object.keys(regionTotals), data: Object.values(regionTotals) };
-  };
-
-  const showNotification = (message, type = 'success') => {
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.textContent = message;
-    notification.style.cssText = `
-      position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 8px; color: white;
-      background: ${type === 'error' ? '#FF3B30' : '#34C759'}; z-index: 3000;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.2); animation: slideInFromRight 0.3s ease;`;
-    document.body.appendChild(notification);
-    setTimeout(() => {
-      notification.style.animation = 'slideOutToRight 0.3s ease';
-      setTimeout(() => notification.remove(), 300);
-    }, 3000);
-  };
+    // cleanup
+    return () => destroyCharts();
+  }, [pieData, dailyData]);
 
   return (
     <>
@@ -464,9 +181,7 @@ const Dashboard = ({ onBackToMain }) => {
             </div>
             <div className="nav-links">
               <a href="#dashboard" className="nav-link active">대시보드</a>
-              <a href="#data" className="nav-link">데이터</a>
               <a href="#charts" className="nav-link">차트</a>
-              <a href="#analytics" className="nav-link">분석</a>
             </div>
           </div>
           <div className="nav-right">
@@ -480,7 +195,7 @@ const Dashboard = ({ onBackToMain }) => {
 
       {/* 메인 컨텐츠 */}
       <main className="main-content">
-        {/* 히어로 섹션 */}
+        {/* 히어로 */}
         <section className="hero-section">
           <div className="hero-container">
             <h1 className="hero-title">결과 분석</h1>
@@ -488,42 +203,34 @@ const Dashboard = ({ onBackToMain }) => {
           </div>
         </section>
 
-        {/* [추가] 퀴즈 요약 섹션 (서버 데이터) */}
+        {/* 요약 카드 */}
         <section className="stats-section">
           <div className="stats-container">
             <div className="stat-card">
-              <div className="stat-icon">
-                <i className="fas fa-list-ol"></i>
-              </div>
+              <div className="stat-icon"><i className="fas fa-list-ol"></i></div>
               <div className="stat-info">
                 <h3 className="stat-value">{summary ? summary.totalAnswered : 0}</h3>
                 <p className="stat-label">총 풀이수</p>
               </div>
             </div>
             <div className="stat-card">
-              <div className="stat-icon">
-                <i className="fas fa-check-circle"></i>
-              </div>
+              <div className="stat-icon"><i className="fas fa-check-circle"></i></div>
               <div className="stat-info">
                 <h3 className="stat-value">{summary ? summary.correctCount : 0}</h3>
                 <p className="stat-label">정답수</p>
               </div>
             </div>
             <div className="stat-card">
-              <div className="stat-icon">
-                <i className="fas fa-chart-pie"></i>
-              </div>
+              <div className="stat-icon"><i className="fas fa-chart-pie"></i></div>
               <div className="stat-info">
-                <h3 className="stat-value">
-                  {summary ? `${(summary.accuracy * 100).toFixed(1)}%` : "0%"}
-                </h3>
+                <h3 className="stat-value">{summary ? `${(summary.accuracy * 100).toFixed(1)}%` : '0%'}</h3>
                 <p className="stat-label">정확도</p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* [추가] 최근 풀이 섹션 (서버 데이터) */}
+        {/* 최근 풀이 테이블 */}
         <section className="data-section">
           <div className="data-container">
             <div className="section-header"><h2>최근 풀이</h2></div>
@@ -533,11 +240,11 @@ const Dashboard = ({ onBackToMain }) => {
                   <tr><th>시간</th><th>문제</th><th>결과</th></tr>
                 </thead>
                 <tbody>
-                  {attempts.map(a => (
-                    <tr key={a.id}>
-                      <td>{a.answered_at.replace('T',' ').slice(0,16)}</td>
+                  {attempts.map((a, idx) => (
+                    <tr key={a.id || idx}>
+                      <td>{String(a.answered_at).replace('T', ' ').slice(0, 16)}</td>
                       <td>{a.quiz_title}</td>
-                      <td>{a.correct ? "O" : "X"}</td>
+                      <td>{a.correct ? 'O' : 'X'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -549,42 +256,46 @@ const Dashboard = ({ onBackToMain }) => {
         {/* 차트 섹션 */}
         <section className="charts-section" id="charts">
           <div className="charts-container">
-            <div className="section-header">
+            <div className="section-header" style={{ gap: 16 }}>
               <h2>문제풀이 및 학습량 분석 차트</h2>
               <p>본인의 문제 풀이경향과 약점을 파악하세요!</p>
+
+              {/* 카테고리 드롭다운 */}
+              <div style={{ marginLeft: 'auto' }}>
+                <label style={{ fontSize: 14, color: '#666', marginRight: 8 }}>카테고리</label>
+                <select
+                  value={selectedCategory ?? ''}
+                  onChange={(e) => setSelectedCategory(e.target.value ? Number(e.target.value) : null)}
+                  style={{ padding: '6px 10px', borderRadius: 8 }}
+                >
+                  <option value="">전체</option>
+                  {categories.map(c => (
+                    <option key={c.category_id} value={c.category_id}>
+                      {c.category_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div className="charts-grid">
-              
-
-              {/* 제품별 판매 비율 */}
+              {/* 문제풀이 비율 */}
               <div className="chart-card">
-                <div className="chart-header">
-                  <h3>문제풀이 비율</h3>
-                </div>
-                <div className="chart-content">
-                  <canvas id="productPieChart" ref={productPieRef}></canvas>
-                </div>
+                <div className="chart-header"><h3>문제풀이 비율</h3></div>
+                <div className="chart-content"><canvas ref={productPieRef} /></div>
               </div>
 
-              {/* 지역별 판매 현황 */}
+              {/* 일일 학습량 */}
               <div className="chart-card">
-                <div className="chart-header">
-                  <h3>일일 학습량</h3>
-                </div>
-                <div className="chart-content">
-                  <canvas id="regionBarChart" ref={regionBarRef}></canvas>
-                </div>
+                <div className="chart-header"><h3>일일 학습량</h3></div>
+                <div className="chart-content"><canvas ref={regionBarRef} /></div>
               </div>
             </div>
           </div>
         </section>
-
       </main>
     </>
   );
 };
 
 export default Dashboard;
-
-
